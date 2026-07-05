@@ -17,7 +17,10 @@ db_parser = re.compile(r'db/([a-z]+)\.php')
 def fetch_page(url, retries=2, return_page_object=False):
 	try:
 		request = urllib.request.Request(url)
-		request.add_header('User-Agent', 'VGMdb/1.0 +https://vgmdb.info')
+		if config.USER_AGENT != None:
+			request.add_header('User-Agent', config.USER_AGENT)
+		else:
+			request.add_header('User-Agent', 'VGMdb/1.0 +https://vgmdb.info')
 		if config.USER_COOKIE != None:
 			request.add_header('Cookie', config.USER_COOKIE)
 		page = urllib.request.urlopen(request, None, 30)

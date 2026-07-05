@@ -145,6 +145,25 @@ def search(type=None, query=None):
 def recent(type='albums'):
 	return do_page('recent', vgmdb.fetch.recent(type))
 
+@route('/settings', method='POST')
+@catch_exceptions
+@instrumented
+def settings():
+	request_body = request.json
+	response_body = {'updated': []}
+	outputter = vgmdb.output.get_outputter(vgmdb.config.for_request(request), 'json', None)
+	response.content_type = outputter.content_type
+	if not request_body:
+		response.status = 400
+	else:
+		if 'userAgent' in request_body:
+			vgmdb.config.USER_AGENT = request_body['userAgent']
+			response_body['updated'].append('USER_AGENT')
+		if 'userCookie' in request_body:
+			vgmdb.config.USER_COOKIE = request_body['userCookie']
+			response_body['updated'].append('USER_COOKIE')
+	return outputter('settings', response_body, None)
+
 @route('/')
 @route('/about')
 def about():
